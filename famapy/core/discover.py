@@ -21,7 +21,7 @@ class DiscoverMetamodels(object):
             'fm': {
                 'module': module,
                 'model': {'VariabilityModel': 'FeatureModel'},
-                'transformation': {'TextToModel': 'XMLTransformation'},
+                'transformation': {'TextToModel': ['XMLTransformation']},
                 ...
             },
         }
@@ -109,7 +109,7 @@ class DiscoverMetamodels(object):
                 __vm = self.metamodels[mm_src].get('model', {}).get('VariabilityModel')
                 __class = self.metamodels[mm_dst].get('transformations', {}).get('ModelToModel')
                 instance = __class(__vm)
-                res = instance.transform(filename)
+                res = instance.transform()
         elif src and not dst:  # t2m
             mm_src = self.get_metamodel_by_name(src)
             __class = self.metamodels[mm_src].get('transformations', {}).get('TextToModel')
