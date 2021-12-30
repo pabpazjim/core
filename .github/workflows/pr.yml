@@ -10,18 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2.5.1
-      
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: npm-
-          
+      - uses: actions/setup-node@v2
+             
       - name: Install dependencies
-        run: npm ci --ignore-scripts
-      
+        run: npm ci
+    
       - uses: beemojs/conventional-pr-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
