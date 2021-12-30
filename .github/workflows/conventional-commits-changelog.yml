@@ -1,0 +1,10 @@
+name: Conventional Commits Changelog
+on:
+  release:
+    types: released
+
+jobs:
+  conventional-commits-changelog:
+    uses: TriPSs/conventional-changelog-action@v3
+    with:
+      github-token: ${{ secrets.github_token }}
