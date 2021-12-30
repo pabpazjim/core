@@ -5,6 +5,6 @@ on:
 
 jobs:
   conventional-commits-changelog:
-    uses: TriPSs/conventional-changelog-action@v3
+    uses: .github/workflows/TriPSs/conventional-changelog-action@v3
     with:
       github-token: ${{ secrets.github_token }}
