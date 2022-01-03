@@ -22,4 +22,4 @@ Detailed changes for each release are documented in the [release notes](https://
 
 See [CONTRIBUTING.md](https://github.com/diverso-lab/core/blob/master/CONTRIBUTING.md)
 
-UPDATE
+UPDATE 2
