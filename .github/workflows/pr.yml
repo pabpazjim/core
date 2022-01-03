@@ -1,20 +1,21 @@
-name: PR
+name: Lint Commit Messages
 on:
   pull_request:
     types: [opened, reopened, edited, review_requested]
     
 jobs:
-    
-  conventional:
-    name: Conventional PR
+  commitlint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v2
-             
-      - name: Install dependencies
-        run: npm ci
-    
-      - uses: beemojs/conventional-pr-action@v2
+        with:
+          node-version: '14'
+      - run: npm install
+      # Run the commitlint action, considering its own dependencies and yours as well 🚀
+      # `github.workspace` is the path to your repository.
+      - uses: wagoid/commitlint-github-action@v4
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_PATH: ${{ github.workspace }}/node_modules
