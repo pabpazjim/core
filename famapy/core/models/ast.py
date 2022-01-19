@@ -8,11 +8,15 @@ class ASTOperation(Enum):
     AND = 'AND'
     OR = 'OR'
     IMPLIES = 'IMPLIES'
-    NOT = 'NOT'   
+    NOT = 'NOT'
     EQUIVALENCE = 'EQUIVALENCE'
 
 
 class Node:
+    operations = ['requires', 'excludes', 'and',
+                  'or', 'implies', 'not', 'equivalence']
+    afm_operations = ['iff', '>', '<', '>=', '<=', '==', '!=', '+', '-', '*', '/', '%', '^', '=']
+    operations = operations + afm_operations
 
     def __init__(self, data: Any, left: 'Node' = None, right: 'Node' = None):  # type: ignore
         self.data = data
@@ -101,16 +105,16 @@ def eliminate_equivalence(node: Node) -> Node:
     """Replace P <=> Q with (P ∨ !Q) ∧ (!P ∨ Q)."""
     pnot = AST.create_unary_operation(ASTOperation.NOT, node.left).root
     qnot = AST.create_unary_operation(ASTOperation.NOT, node.right).root
-    left = AST.create_binary_operation(ASTOperation.OR, node.left, qnot).root 
-    right = AST.create_binary_operation(ASTOperation.OR, pnot, node.right).root 
-    return AST.create_binary_operation(ASTOperation.AND, left, right).root 
+    left = AST.create_binary_operation(ASTOperation.OR, node.left, qnot).root
+    right = AST.create_binary_operation(ASTOperation.OR, pnot, node.right).root
+    return AST.create_binary_operation(ASTOperation.AND, left, right).root
 
 
 def eliminate_exclusion(node: Node) -> Node:
     """Replace P EXCLUDES !Q with !P ∨ !Q."""
     left = AST.create_unary_operation(ASTOperation.NOT, node.left).root
     right = AST.create_unary_operation(ASTOperation.NOT, node.right).root
-    return AST.create_binary_operation(ASTOperation.OR, left, right).root 
+    return AST.create_binary_operation(ASTOperation.OR, left, right).root
 
 
 def eliminate_complex_operators(ast: AST) -> AST:
@@ -147,7 +151,7 @@ def apply_demorganlaw(node: Node, operation: ASTOperation) -> Node:
 
 
 def move_nots_inwards(ast: AST) -> AST:
-    """Move NOTs inwards by repeatedly applying De Morgan's Law, 
+    """Move NOTs inwards by repeatedly applying De Morgan's Law,
     and eliminate doble negations by replacing !!P with P.
     """
     node = ast.root
@@ -199,7 +203,7 @@ def distribute_ors(ast: AST) -> AST:
             new_node = apply_distribution(node.right, node.left)
             result = distribute_ors(AST(new_node))
         elif node.right.is_op() and node.right.data == ASTOperation.AND:
-            new_node = apply_distribution(node.left, node.right) 
+            new_node = apply_distribution(node.left, node.right)
             result = distribute_ors(AST(new_node))
         else:
             node.left = distribute_ors(AST(node.left)).root
@@ -225,7 +229,7 @@ def get_clauses_from_and_node(node: Node) -> list[list[Any]]:
     clauses = []
     clauses_left = get_clauses(node.left)  # Recursive AND
     # recursive ANDs may introduce additional clauses
-    if len(clauses_left) > 0 and isinstance(clauses_left[0], list):  
+    if len(clauses_left) > 0 and isinstance(clauses_left[0], list):
         for clause in clauses_left:
             clauses.append(clause)
     else:
@@ -233,7 +237,7 @@ def get_clauses_from_and_node(node: Node) -> list[list[Any]]:
 
     clauses_right = get_clauses(node.right)  # Recursive AND
     # recursive ANDs may introduce additional clauses
-    if len(clauses_right) > 0 and isinstance(clauses_right[0], list):  
+    if len(clauses_right) > 0 and isinstance(clauses_right[0], list):
         for clause in clauses_right:
             clauses.append(clause)
     else:
